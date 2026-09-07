@@ -1,5 +1,6 @@
 package com.example.OilGasFieldOperationsSystem.controllers;
 
+import com.example.OilGasFieldOperationsSystem.dto.ShipmentDTO;
 import com.example.OilGasFieldOperationsSystem.entities.Shipment;
 import com.example.OilGasFieldOperationsSystem.services.ShipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,39 +20,39 @@ public class ShipmentController {
     }
 
     @PostMapping("add")
-    public Long addShipment(@RequestBody Shipment shipment) {
+    public Long addShipment(@RequestBody ShipmentDTO shipment) {
 
         return shipmentService.addShipment(
                 shipment.getShipmentDate(),
                 shipment.getVolume(),
                 shipment.getDestination(),
                 shipment.getStatus(),
-                shipment.getStorageTank().getId(),
-                shipment.getCustomer().getId()
+                shipment.getStorageTankId(),
+                shipment.getCustomerId()
         );
     }
 
     @GetMapping("getAll")
-    public List<Shipment> getAllShipment() {
-        return shipmentService.getAllShipment();
+    public List<ShipmentDTO> getAllShipment() {
+        return ShipmentDTO.convertToDTO(shipmentService.getAllShipment());
     }
 
     @GetMapping("getById")
-    public Shipment getById(@RequestParam Long id) {
-        return shipmentService.getById(id);
+    public ShipmentDTO getById(@RequestParam Long id) {
+        return ShipmentDTO.convertToDTO(shipmentService.getById(id));
     }
 
     @PutMapping("update")
-    public Shipment updateShipment(
-            @RequestBody Shipment shipment) throws Exception {
+    public ShipmentDTO updateShipment(
+            @RequestBody ShipmentDTO shipment) throws Exception {
 
-        return shipmentService.updateShipment(
-                shipment.getId(),
+        return ShipmentDTO.convertToDTO(shipmentService.updateShipment(
+                shipment.getShipmentId(),
                 shipment.getShipmentDate(),
                 shipment.getVolume(),
                 shipment.getDestination(),
                 shipment.getStatus()
-        );
+        ));
     }
 
     @DeleteMapping("deleteById")

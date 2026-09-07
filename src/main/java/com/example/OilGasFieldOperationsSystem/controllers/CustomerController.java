@@ -1,5 +1,6 @@
 package com.example.OilGasFieldOperationsSystem.controllers;
 
+import com.example.OilGasFieldOperationsSystem.dto.CustomerDTO;
 import com.example.OilGasFieldOperationsSystem.entities.Customer;
 import com.example.OilGasFieldOperationsSystem.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class CustomerController {
     }
 
     @PostMapping("add")
-    public Long addCustomer(@RequestBody Customer customer) {
+    public Long addCustomer(@RequestBody CustomerDTO customer) {
 
         return customerService.addCustomer(
                 customer.getName(),
@@ -30,26 +31,26 @@ public class CustomerController {
     }
 
     @GetMapping("getAll")
-    public List<Customer> getAllCustomer() {
-        return customerService.getAllCustomer();
+    public List<CustomerDTO> getAllCustomer() {
+        return CustomerDTO.convertToDTO(customerService.getAllCustomer());
     }
 
     @GetMapping("getById")
-    public Customer getById(@RequestParam Long id) {
-        return customerService.getById(id);
+    public CustomerDTO getById(@RequestParam Long id) {
+        return CustomerDTO.convertToDTO(customerService.getById(id));
     }
 
     @PutMapping("update")
-    public Customer updateCustomer(
-            @RequestBody Customer customer) throws Exception {
+    public CustomerDTO updateCustomer(
+            @RequestBody CustomerDTO customer) throws Exception {
 
-        return customerService.updateCustomer(
-                customer.getId(),
+        return CustomerDTO.convertToDTO(customerService.updateCustomer(
+                customer.getCustomerId(),
                 customer.getName(),
                 customer.getEmail(),
                 customer.getPhoneNumber(),
                 customer.getCountry()
-        );
+        ));
     }
 
     @DeleteMapping("deleteById")

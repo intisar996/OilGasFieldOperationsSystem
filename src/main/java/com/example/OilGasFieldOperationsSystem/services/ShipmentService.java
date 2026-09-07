@@ -3,6 +3,7 @@ package com.example.OilGasFieldOperationsSystem.services;
 import com.example.OilGasFieldOperationsSystem.entities.Customer;
 import com.example.OilGasFieldOperationsSystem.entities.Shipment;
 import com.example.OilGasFieldOperationsSystem.entities.StorageTank;
+import com.example.OilGasFieldOperationsSystem.exceptions.ResourceNotFoundException;
 import com.example.OilGasFieldOperationsSystem.repositories.CustomerRepository;
 import com.example.OilGasFieldOperationsSystem.repositories.ShipmentRepository;
 import com.example.OilGasFieldOperationsSystem.repositories.StorageTankRepository;
@@ -36,22 +37,44 @@ public class ShipmentService {
         this.customerRepository = customerRepository;
     }
 
-    public Long addShipment(Date shipmentDate, Double volume,
-                            String destination, String status,
-                            Long storageTankId, Long customerId) {
+    public Long addShipment(Date shipmentDate,
+                            Double volume,
+                            String destination,
+                            String status,
+                            Long storageTankId,
+                            Long customerId) {
 
-        StorageTank storageTank = storageTankService.getById(storageTankId);
-        Customer customer = customerService.getById(customerId);
+        StorageTank storageTank =
+                storageTankService.getById(storageTankId);
 
-        if (storageTank == null || storageTank.getId() == null ||
-                !storageTank.getIsActive()) {
-            return -1L;
+        Customer customer =
+                customerService.getById(customerId);
+
+        if (volume == null || volume <= 0) {
+            throw new IllegalArgumentException(
+                    "Shipment volume must be greater than 0"
+            );
         }
 
-        if (customer == null || customer.getId() == null ||
-                !customer.getIsActive()) {
-            return -1L;
+        if (storageTank.getCurrentLevel() == null) {
+            throw new IllegalArgumentException(
+                    "Storage tank current level cannot be null"
+            );
         }
+
+        // Reject if shipment volume exceeds current tank level
+        if (volume > storageTank.getCurrentLevel()) {
+            throw new IllegalArgumentException(
+                    "Shipment volume exceeds the current tank level"
+            );
+        }
+
+        // Decrease tank level
+        storageTank.setCurrentLevel(
+                storageTank.getCurrentLevel() - volume
+        );
+
+        storageTankRepository.save(storageTank);
 
         Shipment shipment = new Shipment();
 
@@ -64,7 +87,8 @@ public class ShipmentService {
         shipment.setStorageTank(storageTank);
         shipment.setCustomer(customer);
 
-        Shipment saveShipment = shipmentRepository.save(shipment);
+        Shipment saveShipment =
+                shipmentRepository.save(shipment);
 
         return saveShipment.getId();
     }
@@ -75,23 +99,38 @@ public class ShipmentService {
 
     public Shipment getById(Long id) {
 
-        Optional<Shipment> shipment = shipmentRepository.findById(id);
+        Optional<Shipment> shipment =
+                shipmentRepository.findById(id);
 
-        if (shipment.isPresent() && shipment.get().getIsActive()) {
+        if (shipment.isPresent() &&
+                shipment.get().getIsActive()) {
+
             return shipment.get();
         }
 
-        return new Shipment();
+        throw new ResourceNotFoundException(
+                "Shipment not found with id: " + id
+        );
     }
 
-    public Shipment updateShipment(Long id, Date shipmentDate,
-                                   Double volume, String destination,
-                                   String status) throws Exception {
+    public Shipment updateShipment(Long id,
+                                   Date shipmentDate,
+                                   Double volume,
+                                   String destination,
+                                   String status) {
 
-        Shipment shipmentToUpdate = shipmentRepository.getById(id);
+        Shipment shipmentToUpdate =
+                shipmentRepository.findById(id)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Shipment not found with id: " + id
+                                )
+                        );
 
-        if (shipmentToUpdate == null) {
-            throw new Exception("Shipment is not found by the id");
+        if (!shipmentToUpdate.getIsActive()) {
+            throw new ResourceNotFoundException(
+                    "Shipment not found with id: " + id
+            );
         }
 
         shipmentToUpdate.setUpdateDate(new Date());
@@ -103,12 +142,20 @@ public class ShipmentService {
         return shipmentRepository.save(shipmentToUpdate);
     }
 
-    public Boolean deleteShipment(Long id) throws Exception {
+    public Boolean deleteShipment(Long id) {
 
-        Shipment shipmentToUpdate = shipmentRepository.getById(id);
+        Shipment shipmentToUpdate =
+                shipmentRepository.findById(id)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Shipment not found with id: " + id
+                                )
+                        );
 
-        if (shipmentToUpdate == null) {
-            throw new Exception("Shipment is not found by the id");
+        if (!shipmentToUpdate.getIsActive()) {
+            throw new ResourceNotFoundException(
+                    "Shipment not found with id: " + id
+            );
         }
 
         shipmentToUpdate.setUpdateDate(new Date());

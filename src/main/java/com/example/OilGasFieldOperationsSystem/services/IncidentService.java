@@ -3,6 +3,7 @@ package com.example.OilGasFieldOperationsSystem.services;
 import com.example.OilGasFieldOperationsSystem.entities.Incident;
 import com.example.OilGasFieldOperationsSystem.entities.OilField;
 import com.example.OilGasFieldOperationsSystem.entities.Personnel;
+import com.example.OilGasFieldOperationsSystem.exceptions.ResourceNotFoundException;
 import com.example.OilGasFieldOperationsSystem.repositories.IncidentRepository;
 import com.example.OilGasFieldOperationsSystem.repositories.OilFieldRepository;
 import com.example.OilGasFieldOperationsSystem.repositories.PersonnelRepository;
@@ -48,12 +49,14 @@ public class IncidentService {
 
         if (oilField == null || oilField.getId() == null ||
                 !oilField.getIsActive()) {
-            return -1L;
+            throw  new ResourceNotFoundException("oilField is not found by the id");
+
         }
 
         if (personnel == null || personnel.getId() == null ||
                 !personnel.getIsActive()) {
-            return -1L;
+            throw  new ResourceNotFoundException("personnel is not found by the id");
+
         }
 
         Incident incident = new Incident();
@@ -98,7 +101,8 @@ public class IncidentService {
                 incidentRepository.getById(id);
 
         if (incidentToUpdate == null) {
-            throw new Exception("Incident is not found by the id");
+            throw  new ResourceNotFoundException("Incident is not found by the id");
+
         }
 
         incidentToUpdate.setUpdateDate(new Date());
@@ -116,7 +120,8 @@ public class IncidentService {
                 incidentRepository.getById(id);
 
         if (incidentToUpdate == null) {
-            throw new Exception("Incident is not found by the id");
+            throw  new ResourceNotFoundException("Incident is not found by the id");
+
         }
 
         incidentToUpdate.setUpdateDate(new Date());

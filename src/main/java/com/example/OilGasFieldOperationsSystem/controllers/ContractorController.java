@@ -1,5 +1,6 @@
 package com.example.OilGasFieldOperationsSystem.controllers;
 
+import com.example.OilGasFieldOperationsSystem.dto.ContractorDTO;
 import com.example.OilGasFieldOperationsSystem.entities.Contractor;
 import com.example.OilGasFieldOperationsSystem.services.ContractorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class ContractorController {
     }
 
     @PostMapping("add")
-    public Long addContractor(@RequestBody Contractor contractor) {
+    public Long addContractor(@RequestBody ContractorDTO contractor) {
 
         return contractorService.addContractor(
                 contractor.getName(),
@@ -30,26 +31,26 @@ public class ContractorController {
     }
 
     @GetMapping("getAll")
-    public List<Contractor> getAllContractor() {
-        return contractorService.getAllContractor();
+    public List<ContractorDTO> getAllContractor() {
+        return  ContractorDTO.convertToDTO(contractorService.getAllContractor());
     }
 
     @GetMapping("getById")
-    public Contractor getById(@RequestParam Long id) {
-        return contractorService.getById(id);
+    public ContractorDTO getById(@RequestParam Long id) {
+        return ContractorDTO.convertToDTO(contractorService.getById(id));
     }
 
     @PutMapping("update")
-    public Contractor updateContractor(
-            @RequestBody Contractor contractor) throws Exception {
+    public ContractorDTO updateContractor(
+            @RequestBody ContractorDTO contractor) throws Exception {
 
-        return contractorService.updateContractor(
-                contractor.getId(),
+        return ContractorDTO.convertToDTO(contractorService.updateContractor(
+                contractor.getContractorId(),
                 contractor.getName(),
                 contractor.getEmail(),
                 contractor.getPhoneNumber(),
                 contractor.getCountry()
-        );
+        ));
     }
 
     @DeleteMapping("deleteById")

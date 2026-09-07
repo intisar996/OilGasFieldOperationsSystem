@@ -1,5 +1,7 @@
 package com.example.OilGasFieldOperationsSystem.controllers;
 
+import com.example.OilGasFieldOperationsSystem.dto.StorageTankDTO;
+import com.example.OilGasFieldOperationsSystem.dto.TransferDTO;
 import com.example.OilGasFieldOperationsSystem.entities.StorageTank;
 import com.example.OilGasFieldOperationsSystem.services.StorageTankService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,38 +21,37 @@ public class StorageTankController {
     }
 
     @PostMapping("add")
-    public Long addStorageTank(@RequestBody StorageTank storageTank) {
+    public Long addStorageTank(@RequestBody StorageTankDTO storageTank) {
 
         return storageTankService.addStorageTank(
                 storageTank.getTankCode(),
                 storageTank.getCapacity(),
                 storageTank.getCurrentLevel(),
                 storageTank.getProduct(),
-                storageTank.getOilField().getId()
+                storageTank.getOilFieldId()
         );
     }
 
     @GetMapping("getAll")
-    public List<StorageTank> getAllStorageTank() {
-        return storageTankService.getAllStorageTank();
+    public List<StorageTankDTO> getAllStorageTank() {
+        return StorageTankDTO.convertToDTO(storageTankService.getAllStorageTank());
     }
 
     @GetMapping("getById")
-    public StorageTank getById(@RequestParam Long id) {
-        return storageTankService.getById(id);
+    public StorageTankDTO getById(@RequestParam Long id) {
+        return StorageTankDTO.convertToDTO(storageTankService.getById(id));
     }
 
     @PutMapping("update")
-    public StorageTank updateStorageTank(
-            @RequestBody StorageTank storageTank) throws Exception {
+    public StorageTankDTO updateStorageTank(
+            @RequestBody StorageTankDTO storageTank) throws Exception {
 
-        return storageTankService.updateStorageTank(
-                storageTank.getId(),
+        return StorageTankDTO.convertToDTO(storageTankService.updateStorageTank(
+                storageTank.getStorageTankId(),
                 storageTank.getTankCode(),
                 storageTank.getCapacity(),
-                storageTank.getCurrentLevel(),
                 storageTank.getProduct()
-        );
+        ));
     }
 
     @DeleteMapping("deleteById")
@@ -59,4 +60,20 @@ public class StorageTankController {
 
         return storageTankService.deleteStorageTank(id);
     }
+
+    @PostMapping("transfer")
+    public Long transferToTank(@RequestBody TransferDTO dto) {
+
+        return storageTankService.transferToTank(
+                dto.getProductionReadingId(),
+                dto.getStorageTankId(),
+                dto.getProduct()
+        );
+    }
+
+
+
+
+
+
 }

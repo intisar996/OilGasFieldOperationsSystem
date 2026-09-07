@@ -1,5 +1,6 @@
 package com.example.OilGasFieldOperationsSystem.controllers;
 
+import com.example.OilGasFieldOperationsSystem.dto.OilFieldDTO;
 import com.example.OilGasFieldOperationsSystem.entities.OilField;
 import com.example.OilGasFieldOperationsSystem.services.OilFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class OilFieldController {
     }
 
     @PostMapping("add")
-    public Long addOilField(@RequestBody OilField oilField) {
+    public Long addOilField(@RequestBody OilFieldDTO oilField) {
 
         return oilFieldService.addOilField(
                 oilField.getName(),
@@ -29,25 +30,25 @@ public class OilFieldController {
     }
 
     @GetMapping("getAll")
-    public List<OilField> getAllOilField() {
-        return oilFieldService.getAllOilField();
+    public List<OilFieldDTO> getAllOilField() {
+        return OilFieldDTO.convertToDTO(oilFieldService.getAllOilField());
     }
 
     @GetMapping("getById")
-    public OilField getById(@RequestParam Long id) {
-        return oilFieldService.getById(id);
+    public OilFieldDTO getById(@RequestParam Long id) {
+        return OilFieldDTO.convertToDTO(oilFieldService.getById(id));
     }
 
     @PutMapping("update")
-    public OilField updateOilField(
-            @RequestBody OilField oilField) throws Exception {
+    public OilFieldDTO updateOilField(
+            @RequestBody OilFieldDTO oilField) throws Exception {
 
-        return oilFieldService.updateOilField(
-                oilField.getId(),
+        return OilFieldDTO.convertToDTO(oilFieldService.updateOilField(
+                oilField.getOilFieldId(),
                 oilField.getName(),
                 oilField.getLocation(),
                 oilField.getRegion()
-        );
+        ));
     }
 
     @DeleteMapping("deleteById")

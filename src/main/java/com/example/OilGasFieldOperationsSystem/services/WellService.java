@@ -3,6 +3,7 @@ package com.example.OilGasFieldOperationsSystem.services;
 import com.example.OilGasFieldOperationsSystem.entities.OilField;
 import com.example.OilGasFieldOperationsSystem.entities.Rig;
 import com.example.OilGasFieldOperationsSystem.entities.Well;
+import com.example.OilGasFieldOperationsSystem.exceptions.ResourceNotFoundException;
 import com.example.OilGasFieldOperationsSystem.repositories.OilFieldRepository;
 import com.example.OilGasFieldOperationsSystem.repositories.RigRepository;
 import com.example.OilGasFieldOperationsSystem.repositories.WellRepository;
@@ -41,16 +42,29 @@ public class WellService {
                         String status, Long oilFieldId, Long rigId) {
 
         OilField oilField = oilFieldService.getById(oilFieldId);
-        Rig rig = rigService.getById(rigId);
 
-        if (oilField == null || oilField.getId() == null ||
+        if (oilField == null ||
+                oilField.getId() == null ||
                 !oilField.getIsActive()) {
-            return -1L;
+
+            throw new ResourceNotFoundException(
+                    "Oil field not found with id: " + oilFieldId);
         }
 
-        if (rig == null || rig.getId() == null ||
+        Rig rig = rigService.getById(rigId);
+
+        if (rig == null ||
+                rig.getId() == null ||
                 !rig.getIsActive()) {
-            return -1L;
+
+            throw new ResourceNotFoundException(
+                    "Rig not found with id: " + rigId);
+        }
+
+        if (wellRepository.isRigAssign(rigId)) {
+
+            throw new IllegalArgumentException(
+                    "Rig is already assigned to another well");
         }
 
         Well well = new Well();
@@ -75,22 +89,34 @@ public class WellService {
 
     public Well getById(Long id) {
 
-        Optional<Well> well = wellRepository.findById(id);
+        Optional<Well> well =
+                wellRepository.findById(id);
 
-        if (well.isPresent() && well.get().getIsActive()) {
+        if (well.isPresent() &&
+                well.get().getIsActive()) {
+
             return well.get();
         }
 
-        return new Well();
+        throw new ResourceNotFoundException(
+                "Well not found with id: " + id);
     }
 
-    public Well updateWell(Long id, String wellCode, Double depth,
-                           String type, String status) throws Exception {
+    public Well updateWell(Long id,
+                           String wellCode,
+                           Double depth,
+                           String type,
+                           String status) {
 
-        Well wellToUpdate = wellRepository.getById(id);
+        Well wellToUpdate =
+                wellRepository.findById(id)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Well not found with id: " + id));
 
-        if (wellToUpdate == null) {
-            throw new Exception("Well is not found by the id");
+        if (!wellToUpdate.getIsActive()) {
+            throw new ResourceNotFoundException(
+                    "Well not found with id: " + id);
         }
 
         wellToUpdate.setUpdateDate(new Date());
@@ -99,17 +125,20 @@ public class WellService {
         wellToUpdate.setType(type);
         wellToUpdate.setStatus(status);
 
-        wellToUpdate = wellRepository.save(wellToUpdate);
-
-        return wellToUpdate;
+        return wellRepository.save(wellToUpdate);
     }
 
-    public Boolean deleteWell(Long id) throws Exception {
+    public Boolean deleteWell(Long id) {
 
-        Well wellToUpdate = wellRepository.getById(id);
+        Well wellToUpdate =
+                wellRepository.findById(id)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Well not found with id: " + id));
 
-        if (wellToUpdate == null) {
-            throw new Exception("Well is not found by the id");
+        if (!wellToUpdate.getIsActive()) {
+            throw new ResourceNotFoundException(
+                    "Well not found with id: " + id);
         }
 
         wellToUpdate.setUpdateDate(new Date());

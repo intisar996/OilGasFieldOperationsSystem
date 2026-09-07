@@ -1,5 +1,6 @@
 package com.example.OilGasFieldOperationsSystem.controllers;
 
+import com.example.OilGasFieldOperationsSystem.dto.PersonnelDTO;
 import com.example.OilGasFieldOperationsSystem.entities.Personnel;
 import com.example.OilGasFieldOperationsSystem.services.PersonnelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,39 +20,39 @@ public class PersonnelController {
     }
 
     @PostMapping("add")
-    public Long addPersonnel(@RequestBody Personnel personnel) {
+    public Long addPersonnel(@RequestBody PersonnelDTO personnel) {
 
         return personnelService.addPersonnel(
                 personnel.getName(),
                 personnel.getRole(),
                 personnel.getPhoneNumber(),
                 personnel.getCertification(),
-                personnel.getContractor().getId(),
-                personnel.getOilField().getId()
+                personnel.getContractorId(),
+                personnel.getOilFieldId()
         );
     }
 
     @GetMapping("getAll")
-    public List<Personnel> getAllPersonnel() {
-        return personnelService.getAllPersonnel();
+    public List<PersonnelDTO> getAllPersonnel() {
+        return PersonnelDTO.convertToDTO(personnelService.getAllPersonnel());
     }
 
     @GetMapping("getById")
-    public Personnel getById(@RequestParam Long id) {
-        return personnelService.getById(id);
+    public PersonnelDTO getById(@RequestParam Long id) {
+        return PersonnelDTO.convertToDTO(personnelService.getById(id));
     }
 
     @PutMapping("update")
-    public Personnel updatePersonnel(
-            @RequestBody Personnel personnel) throws Exception {
+    public PersonnelDTO updatePersonnel(
+            @RequestBody PersonnelDTO personnel) throws Exception {
 
-        return personnelService.updatePersonnel(
-                personnel.getId(),
+        return PersonnelDTO.convertToDTO(personnelService.updatePersonnel (
+                personnel.getPersonnelId(),
                 personnel.getName(),
                 personnel.getRole(),
                 personnel.getPhoneNumber(),
                 personnel.getCertification()
-        );
+        ));
     }
 
     @DeleteMapping("deleteById")

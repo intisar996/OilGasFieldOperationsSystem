@@ -4,6 +4,7 @@ import com.example.OilGasFieldOperationsSystem.entities.Inspection;
 import com.example.OilGasFieldOperationsSystem.entities.Inspector;
 import com.example.OilGasFieldOperationsSystem.entities.Pipeline;
 import com.example.OilGasFieldOperationsSystem.entities.Well;
+import com.example.OilGasFieldOperationsSystem.exceptions.ResourceNotFoundException;
 import com.example.OilGasFieldOperationsSystem.repositories.InspectionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,10 +22,11 @@ public class InspectionService {
     InspectorService inspectorService;
 
     @Autowired
-    public InspectionService(InspectionRepository inspectionRepository,
-                             WellService wellService,
-                             PipelineService pipelineService,
-                             InspectorService inspectorService) {
+    public InspectionService(
+            InspectionRepository inspectionRepository,
+            WellService wellService,
+            PipelineService pipelineService,
+            InspectorService inspectorService) {
 
         this.inspectionRepository = inspectionRepository;
         this.wellService = wellService;
@@ -32,47 +34,73 @@ public class InspectionService {
         this.inspectorService = inspectorService;
     }
 
-    public Long addInspection(Date inspectionDate,
-                              String result,
-                              String notes,
-                              Long wellId,
-                              Long pipelineId,
-                              Long inspectorId) {
+    public Long addInspection(
+            Date inspectionDate,
+            String result,
+            String notes,
+            Long wellId,
+            Long pipelineId,
+            Long inspectorId) {
 
+        // Check Inspector
         Inspector inspector = inspectorService.getById(inspectorId);
 
-        if (inspector == null || inspector.getId() == null ||
+        if (inspector == null ||
+                inspector.getId() == null ||
                 !inspector.getIsActive()) {
-            return -1L;
+
+            throw new ResourceNotFoundException(
+                    "Inspector not found with id: " + inspectorId
+            );
         }
 
         Well well = null;
         Pipeline pipeline = null;
 
+        // Check Well
         if (wellId != null) {
+
             well = wellService.getById(wellId);
 
-            if (well == null || well.getId() == null ||
+            if (well == null ||
+                    well.getId() == null ||
                     !well.getIsActive()) {
-                return -1L;
+
+                throw new ResourceNotFoundException(
+                        "Well not found with id: " + wellId
+                );
             }
         }
 
+        // Check Pipeline
         if (pipelineId != null) {
+
             pipeline = pipelineService.getById(pipelineId);
 
-            if (pipeline == null || pipeline.getId() == null ||
+            if (pipeline == null ||
+                    pipeline.getId() == null ||
                     !pipeline.getIsActive()) {
-                return -1L;
+
+                throw new ResourceNotFoundException(
+                        "Pipeline not found with id: " + pipelineId
+                );
             }
         }
 
+        // Must have either Well or Pipeline
         if (well == null && pipeline == null) {
-            return -1L;
+
+            throw new IllegalArgumentException(
+                    "Either wellId or pipelineId must be provided"
+            );
         }
 
+        // Cannot have both
         if (well != null && pipeline != null) {
-            return -1L;
+
+            throw new IllegalArgumentException(
+                    "Inspection must belong to either a well or a pipeline, not both"
+            );
         }
 
         Inspection inspection = new Inspection();
@@ -92,32 +120,45 @@ public class InspectionService {
         return saveInspection.getId();
     }
 
+
     public List<Inspection> getAllInspection() {
+
         return inspectionRepository.getAllInspection();
     }
+
 
     public Inspection getById(Long id) {
 
         Optional<Inspection> inspection =
                 inspectionRepository.findById(id);
 
-        if (inspection.isPresent() && inspection.get().getIsActive()) {
+        if (inspection.isPresent() &&
+                inspection.get().getIsActive()) {
+
             return inspection.get();
         }
 
-        return new Inspection();
+        throw new ResourceNotFoundException(
+                "Inspection not found with id: " + id
+        );
     }
 
-    public Inspection updateInspection(Long id,
-                                       Date inspectionDate,
-                                       String result,
-                                       String notes) throws Exception {
+
+    public Inspection updateInspection(
+            Long id,
+            Date inspectionDate,
+            String result,
+            String notes) throws Exception {
 
         Inspection inspectionToUpdate =
                 inspectionRepository.getById(id);
 
-        if (inspectionToUpdate == null) {
-            throw new Exception("Inspection is not found by the id");
+        if (inspectionToUpdate == null ||
+                !inspectionToUpdate.getIsActive()) {
+
+            throw new ResourceNotFoundException(
+                    "Inspection not found with id: " + id
+            );
         }
 
         inspectionToUpdate.setUpdateDate(new Date());
@@ -128,13 +169,18 @@ public class InspectionService {
         return inspectionRepository.save(inspectionToUpdate);
     }
 
+
     public Boolean deleteInspection(Long id) throws Exception {
 
         Inspection inspectionToUpdate =
                 inspectionRepository.getById(id);
 
-        if (inspectionToUpdate == null) {
-            throw new Exception("Inspection is not found by the id");
+        if (inspectionToUpdate == null ||
+                !inspectionToUpdate.getIsActive()) {
+
+            throw new ResourceNotFoundException(
+                    "Inspection not found with id: " + id
+            );
         }
 
         inspectionToUpdate.setUpdateDate(new Date());

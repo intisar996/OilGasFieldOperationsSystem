@@ -1,5 +1,6 @@
 package com.example.OilGasFieldOperationsSystem.controllers;
 
+import com.example.OilGasFieldOperationsSystem.dto.TechnicianDTO;
 import com.example.OilGasFieldOperationsSystem.entities.Technician;
 import com.example.OilGasFieldOperationsSystem.services.TechnicianService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class TechnicianController {
     }
 
     @PostMapping("add")
-    public Long addTechnician(@RequestBody Technician technician) {
+    public Long addTechnician(@RequestBody TechnicianDTO technician) {
 
         return technicianService.addTechnician(
                 technician.getName(),
@@ -29,25 +30,25 @@ public class TechnicianController {
     }
 
     @GetMapping("getAll")
-    public List<Technician> getAllTechnician() {
-        return technicianService.getAllTechnician();
+    public List<TechnicianDTO> getAllTechnician() {
+        return TechnicianDTO.convertToDTO(technicianService.getAllTechnician());
     }
 
     @GetMapping("getById")
-    public Technician getById(@RequestParam Long id) {
-        return technicianService.getById(id);
+    public TechnicianDTO getById(@RequestParam Long id) {
+        return TechnicianDTO.convertToDTO(technicianService.getById(id));
     }
 
     @PutMapping("update")
-    public Technician updateTechnician(
-            @RequestBody Technician technician) throws Exception {
+    public TechnicianDTO updateTechnician(
+            @RequestBody TechnicianDTO technician) throws Exception {
 
-        return technicianService.updateTechnician(
-                technician.getId(),
+        return TechnicianDTO.convertToDTO(technicianService.updateTechnician(
+                technician.getTechnicianId(),
                 technician.getName(),
                 technician.getSpecialization(),
                 technician.getPhoneNumber()
-        );
+        ));
     }
 
     @DeleteMapping("deleteById")

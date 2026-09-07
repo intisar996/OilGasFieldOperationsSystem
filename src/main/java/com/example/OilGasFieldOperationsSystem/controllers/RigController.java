@@ -1,5 +1,6 @@
 package com.example.OilGasFieldOperationsSystem.controllers;
 
+import com.example.OilGasFieldOperationsSystem.dto.RigDTO;
 import com.example.OilGasFieldOperationsSystem.entities.Rig;
 import com.example.OilGasFieldOperationsSystem.services.RigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,35 +20,35 @@ public class RigController {
     }
 
     @PostMapping("add")
-    public Long addRig(@RequestBody Rig rig) {
+    public Long addRig(@RequestBody RigDTO rig) {
 
         return rigService.addRig(
                 rig.getName(),
                 rig.getModel(),
                 rig.getCapacity(),
-                rig.getContractor().getId()
+                rig.getContractorId()
         );
     }
 
     @GetMapping("getAll")
-    public List<Rig> getAllRig() {
-        return rigService.getAllRig();
+    public List<RigDTO> getAllRig() {
+        return RigDTO.convertToDTO(rigService.getAllRig());
     }
 
     @GetMapping("getById")
-    public Rig getById(@RequestParam Long id) {
-        return rigService.getById(id);
+    public RigDTO getById(@RequestParam Long id) {
+        return RigDTO.convertToDTO(rigService.getById(id));
     }
 
     @PutMapping("update")
-    public Rig updateRig(@RequestBody Rig rig) throws Exception {
+    public RigDTO updateRig(@RequestBody RigDTO rig) throws Exception {
 
-        return rigService.updateRig(
-                rig.getId(),
+        return RigDTO.convertToDTO(rigService.updateRig(
+                rig.getRigId(),
                 rig.getName(),
                 rig.getModel(),
                 rig.getCapacity()
-        );
+        ));
     }
 
     @DeleteMapping("deleteById")

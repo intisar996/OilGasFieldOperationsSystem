@@ -17,4 +17,15 @@ public interface WellRepository extends JpaRepository<Well, Long> {
     @Query("SELECT w FROM Well w WHERE w.isActive=true AND w.id=:id")
     Well getById(@Param("id") Long id);
 
+
+
+    @Query("""
+    SELECT COUNT(w) > 0
+    FROM Well w
+    WHERE w.isActive = true
+      AND w.rig.id = :rid
+""")
+    boolean isRigAssign(@Param("rid") Long rid);
+
+
 }

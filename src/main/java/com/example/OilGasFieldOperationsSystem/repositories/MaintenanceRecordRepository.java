@@ -17,4 +17,13 @@ public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRe
     @Query("SELECT m FROM MaintenanceRecord m WHERE m.isActive=true AND m.id=:id")
     MaintenanceRecord getById(@Param("id") Long id);
 
+    @Query("""
+        SELECT m
+        FROM MaintenanceRecord m
+        WHERE m.equipment.id = :equipmentId
+          AND m.isActive = true
+    """)
+    List<MaintenanceRecord> getMaintenanceByEquipment(
+            @Param("equipmentId") Long equipmentId);
+
 }

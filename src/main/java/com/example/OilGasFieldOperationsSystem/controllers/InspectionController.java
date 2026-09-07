@@ -1,5 +1,6 @@
 package com.example.OilGasFieldOperationsSystem.controllers;
 
+import com.example.OilGasFieldOperationsSystem.dto.InspectionDTO;
 import com.example.OilGasFieldOperationsSystem.entities.Inspection;
 import com.example.OilGasFieldOperationsSystem.services.InspectionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,49 +21,39 @@ public class InspectionController {
 
     @PostMapping("add")
     public Long addInspection(
-            @RequestBody Inspection inspection) {
-
-        Long wellId = null;
-        Long pipelineId = null;
-
-        if (inspection.getWell() != null) {
-            wellId = inspection.getWell().getId();
-        }
-
-        if (inspection.getPipeline() != null) {
-            pipelineId = inspection.getPipeline().getId();
-        }
+            @RequestBody InspectionDTO inspection) {
 
         return inspectionService.addInspection(
                 inspection.getInspectionDate(),
                 inspection.getResult(),
                 inspection.getNotes(),
-                wellId,
-                pipelineId,
-                inspection.getInspector().getId()
+                inspection.getWellId(),
+                inspection.getPipelineId(),
+                inspection.getInspectorId()
+
         );
     }
 
     @GetMapping("getAll")
-    public List<Inspection> getAllInspection() {
-        return inspectionService.getAllInspection();
+    public List<InspectionDTO> getAllInspection() {
+        return InspectionDTO.convertToDTO(inspectionService.getAllInspection());
     }
 
     @GetMapping("getById")
-    public Inspection getById(@RequestParam Long id) {
-        return inspectionService.getById(id);
+    public InspectionDTO getById(@RequestParam Long id) {
+        return InspectionDTO.convertToDTO(inspectionService.getById(id));
     }
 
     @PutMapping("update")
-    public Inspection updateInspection(
-            @RequestBody Inspection inspection) throws Exception {
+    public InspectionDTO updateInspection(
+            @RequestBody InspectionDTO inspection) throws Exception {
 
-        return inspectionService.updateInspection(
-                inspection.getId(),
+        return InspectionDTO.convertToDTO(inspectionService.updateInspection(
+                inspection.getInspectionId(),
                 inspection.getInspectionDate(),
                 inspection.getResult(),
                 inspection.getNotes()
-        );
+        ));
     }
 
     @DeleteMapping("deleteById")

@@ -1,5 +1,6 @@
 package com.example.OilGasFieldOperationsSystem.controllers;
 
+import com.example.OilGasFieldOperationsSystem.dto.WellDTO;
 import com.example.OilGasFieldOperationsSystem.entities.Well;
 import com.example.OilGasFieldOperationsSystem.services.WellService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,38 +20,38 @@ public class WellController {
     }
 
     @PostMapping("add")
-    public Long addWell(@RequestBody Well well) {
+    public Long addWell(@RequestBody WellDTO well) {
 
         return wellService.addWell(
                 well.getWellCode(),
                 well.getDepth(),
                 well.getType(),
                 well.getStatus(),
-                well.getOilField().getId(),
-                well.getRig().getId()
+                well.getOilFieldId(),
+                well.getRigId()
         );
     }
 
     @GetMapping("getAll")
-    public List<Well> getAllWell() {
-        return wellService.getAllWell();
+    public List<WellDTO> getAllWell() {
+        return WellDTO.convertToDTO(wellService.getAllWell());
     }
 
     @GetMapping("getById")
-    public Well getById(@RequestParam Long id) {
-        return wellService.getById(id);
+    public WellDTO getById(@RequestParam Long id) {
+        return  WellDTO.convertToDTO(wellService.getById(id));
     }
 
     @PutMapping("update")
-    public Well updateWell(@RequestBody Well well) throws Exception {
+    public WellDTO updateWell(@RequestBody WellDTO well) throws Exception {
 
-        return wellService.updateWell(
-                well.getId(),
+        return WellDTO.convertToDTO(wellService.updateWell(
+                well.getWellId(),
                 well.getWellCode(),
                 well.getDepth(),
                 well.getType(),
                 well.getStatus()
-        );
+        ));
     }
 
     @DeleteMapping("deleteById")

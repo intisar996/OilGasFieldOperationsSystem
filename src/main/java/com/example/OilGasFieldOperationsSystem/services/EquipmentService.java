@@ -2,6 +2,7 @@ package com.example.OilGasFieldOperationsSystem.services;
 
 import com.example.OilGasFieldOperationsSystem.entities.Equipment;
 import com.example.OilGasFieldOperationsSystem.entities.OilField;
+import com.example.OilGasFieldOperationsSystem.exceptions.ResourceNotFoundException;
 import com.example.OilGasFieldOperationsSystem.repositories.EquipmentRepository;
 import com.example.OilGasFieldOperationsSystem.repositories.OilFieldRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,8 @@ public class EquipmentService {
 
         if (oilField == null || oilField.getId() == null ||
                 !oilField.getIsActive()) {
-            return -1L;
+            throw  new ResourceNotFoundException("oilField is not found by the id");
+
         }
 
         Equipment equipment = new Equipment();
@@ -76,7 +78,7 @@ public class EquipmentService {
         Equipment equipmentToUpdate = equipmentRepository.getById(id);
 
         if (equipmentToUpdate == null) {
-            throw new Exception("Equipment is not found by the id");
+            throw  new ResourceNotFoundException("Equipment is not found by the id");
         }
 
         equipmentToUpdate.setUpdateDate(new Date());
@@ -93,7 +95,8 @@ public class EquipmentService {
         Equipment equipmentToUpdate = equipmentRepository.getById(id);
 
         if (equipmentToUpdate == null) {
-            throw new Exception("Equipment is not found by the id");
+            throw  new ResourceNotFoundException("Equipment is not found by the id");
+
         }
 
         equipmentToUpdate.setUpdateDate(new Date());

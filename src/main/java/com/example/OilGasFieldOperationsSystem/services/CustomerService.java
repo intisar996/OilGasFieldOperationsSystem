@@ -1,6 +1,7 @@
 package com.example.OilGasFieldOperationsSystem.services;
 
 import com.example.OilGasFieldOperationsSystem.entities.Customer;
+import com.example.OilGasFieldOperationsSystem.exceptions.ResourceNotFoundException;
 import com.example.OilGasFieldOperationsSystem.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,8 @@ public class CustomerService {
         Customer customerToUpdate = customerRepository.getById(id);
 
         if (customerToUpdate == null) {
-            throw new Exception("Customer is not found by the id");
+            throw  new ResourceNotFoundException("Customer is not found by the id");
+
         }
 
         customerToUpdate.setUpdateDate(new Date());
@@ -75,7 +77,8 @@ public class CustomerService {
         Customer customerToUpdate = customerRepository.getById(id);
 
         if (customerToUpdate == null) {
-            throw new Exception("Customer is not found by the id");
+            throw  new ResourceNotFoundException("Customer is not found by the id");
+
         }
 
         customerToUpdate.setUpdateDate(new Date());

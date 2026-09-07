@@ -1,5 +1,6 @@
 package com.example.OilGasFieldOperationsSystem.controllers;
 
+import com.example.OilGasFieldOperationsSystem.dto.IncidentDTO;
 import com.example.OilGasFieldOperationsSystem.entities.Incident;
 import com.example.OilGasFieldOperationsSystem.services.IncidentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,26 +33,26 @@ public class IncidentController {
     }
 
     @GetMapping("getAll")
-    public List<Incident> getAllIncident() {
-        return incidentService.getAllIncident();
+    public List<IncidentDTO> getAllIncident() {
+        return IncidentDTO.convertToDTO(incidentService.getAllIncident());
     }
 
     @GetMapping("getById")
-    public Incident getById(@RequestParam Long id) {
-        return incidentService.getById(id);
+    public IncidentDTO getById(@RequestParam Long id) {
+        return IncidentDTO.convertToDTO(incidentService.getById(id));
     }
 
     @PutMapping("update")
-    public Incident updateIncident(
-            @RequestBody Incident incident) throws Exception {
+    public IncidentDTO updateIncident(
+            @RequestBody IncidentDTO incident) throws Exception {
 
-        return incidentService.updateIncident(
-                incident.getId(),
+        return IncidentDTO.convertToDTO(incidentService.updateIncident(
+                incident.getIncidentId(),
                 incident.getIncidentDate(),
                 incident.getSeverity(),
                 incident.getDescription(),
                 incident.getStatus()
-        );
+        ));
     }
 
     @DeleteMapping("deleteById")

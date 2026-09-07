@@ -1,6 +1,7 @@
 package com.example.OilGasFieldOperationsSystem.services;
 
 import com.example.OilGasFieldOperationsSystem.entities.Contractor;
+import com.example.OilGasFieldOperationsSystem.exceptions.ResourceNotFoundException;
 import com.example.OilGasFieldOperationsSystem.repositories.ContractorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,8 @@ public class ContractorService {
         Contractor contractorToUpdate = contractorRepository.getById(id);
 
         if (contractorToUpdate == null) {
-            throw new Exception("Contractor is not found by the id");
+            throw  new ResourceNotFoundException("Contractor is not found by the id");
+
         }
 
         contractorToUpdate.setUpdateDate(new Date());
@@ -73,7 +75,8 @@ public class ContractorService {
         Contractor contractorToUpdate = contractorRepository.getById(id);
 
         if (contractorToUpdate == null) {
-            throw new Exception("Contractor is not found by the id");
+            throw  new ResourceNotFoundException("Contractor is not found by the id");
+
         }
 
         contractorToUpdate.setUpdateDate(new Date());

@@ -1,5 +1,6 @@
 package com.example.OilGasFieldOperationsSystem.controllers;
 
+import com.example.OilGasFieldOperationsSystem.dto.PipelineDTO;
 import com.example.OilGasFieldOperationsSystem.entities.Pipeline;
 import com.example.OilGasFieldOperationsSystem.services.PipelineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,38 +20,38 @@ public class PipelineController {
     }
 
     @PostMapping("add")
-    public Long addPipeline(@RequestBody Pipeline pipeline) {
+    public Long addPipeline(@RequestBody PipelineDTO pipeline) {
 
         return pipelineService.addPipeline(
                 pipeline.getPipelineCode(),
                 pipeline.getLengthKm(),
                 pipeline.getDiameter(),
                 pipeline.getStatus(),
-                pipeline.getOilField().getId()
+                pipeline.getOilFieldId()
         );
     }
 
     @GetMapping("getAll")
-    public List<Pipeline> getAllPipeline() {
-        return pipelineService.getAllPipeline();
+    public List<PipelineDTO> getAllPipeline() {
+        return PipelineDTO.convertToDTO(pipelineService.getAllPipeline());
     }
 
     @GetMapping("getById")
-    public Pipeline getById(@RequestParam Long id) {
-        return pipelineService.getById(id);
+    public PipelineDTO getById(@RequestParam Long id) {
+        return PipelineDTO.convertToDTO(pipelineService.getById(id));
     }
 
     @PutMapping("update")
-    public Pipeline updatePipeline(
-            @RequestBody Pipeline pipeline) throws Exception {
+    public PipelineDTO updatePipeline(
+            @RequestBody PipelineDTO pipeline) throws Exception {
 
-        return pipelineService.updatePipeline(
-                pipeline.getId(),
+        return PipelineDTO.convertToDTO(pipelineService.updatePipeline(
+                pipeline.getPipelineId(),
                 pipeline.getPipelineCode(),
                 pipeline.getLengthKm(),
                 pipeline.getDiameter(),
                 pipeline.getStatus()
-        );
+        ));
     }
 
     @DeleteMapping("deleteById")

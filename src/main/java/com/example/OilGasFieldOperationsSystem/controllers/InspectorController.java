@@ -1,5 +1,6 @@
 package com.example.OilGasFieldOperationsSystem.controllers;
 
+import com.example.OilGasFieldOperationsSystem.dto.InspectorDTO;
 import com.example.OilGasFieldOperationsSystem.entities.Inspector;
 import com.example.OilGasFieldOperationsSystem.services.InspectorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class InspectorController {
     }
 
     @PostMapping("add")
-    public Long addInspector(@RequestBody Inspector inspector) {
+    public Long addInspector(@RequestBody InspectorDTO inspector) {
 
         return inspectorService.addInspector(
                 inspector.getName(),
@@ -29,25 +30,25 @@ public class InspectorController {
     }
 
     @GetMapping("getAll")
-    public List<Inspector> getAllInspector() {
-        return inspectorService.getAllInspector();
+    public List<InspectorDTO> getAllInspector() {
+        return InspectorDTO.convertToDTO(inspectorService.getAllInspector());
     }
 
     @GetMapping("getById")
-    public Inspector getById(@RequestParam Long id) {
-        return inspectorService.getById(id);
+    public InspectorDTO getById(@RequestParam Long id) {
+        return InspectorDTO.convertToDTO(inspectorService.getById(id));
     }
 
     @PutMapping("update")
-    public Inspector updateInspector(
-            @RequestBody Inspector inspector) throws Exception {
+    public InspectorDTO updateInspector(
+            @RequestBody InspectorDTO inspector) throws Exception {
 
-        return inspectorService.updateInspector(
-                inspector.getId(),
+        return InspectorDTO.convertToDTO(inspectorService.updateInspector(
+                inspector.getInspectorId(),
                 inspector.getName(),
                 inspector.getLicenseNumber(),
                 inspector.getPhoneNumber()
-        );
+        ));
     }
 
     @DeleteMapping("deleteById")

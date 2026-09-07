@@ -3,6 +3,7 @@ package com.example.OilGasFieldOperationsSystem.services;
 import com.example.OilGasFieldOperationsSystem.entities.Contractor;
 import com.example.OilGasFieldOperationsSystem.entities.OilField;
 import com.example.OilGasFieldOperationsSystem.entities.Personnel;
+import com.example.OilGasFieldOperationsSystem.exceptions.ResourceNotFoundException;
 import com.example.OilGasFieldOperationsSystem.repositories.ContractorRepository;
 import com.example.OilGasFieldOperationsSystem.repositories.OilFieldRepository;
 import com.example.OilGasFieldOperationsSystem.repositories.PersonnelRepository;
@@ -45,12 +46,18 @@ public class PersonnelService {
 
         if (contractor == null || contractor.getId() == null ||
                 !contractor.getIsActive()) {
-            return -1L;
+
+            throw new ResourceNotFoundException(
+                    "Contractor not found with id: " + contractorId
+            );
         }
 
         if (oilField == null || oilField.getId() == null ||
                 !oilField.getIsActive()) {
-            return -1L;
+
+            throw new ResourceNotFoundException(
+                    "OilField not found with id: " + oilFieldId
+            );
         }
 
         Personnel personnel = new Personnel();
@@ -78,22 +85,35 @@ public class PersonnelService {
         Optional<Personnel> personnel =
                 personnelRepository.findById(id);
 
-        if (personnel.isPresent() && personnel.get().getIsActive()) {
+        if (personnel.isPresent() &&
+                personnel.get().getIsActive()) {
+
             return personnel.get();
         }
 
-        return new Personnel();
+        throw new ResourceNotFoundException(
+                "Personnel not found with id: " + id
+        );
     }
 
-    public Personnel updatePersonnel(Long id, String name,
-                                     String role, String phoneNumber,
-                                     String certification) throws Exception {
+    public Personnel updatePersonnel(Long id,
+                                     String name,
+                                     String role,
+                                     String phoneNumber,
+                                     String certification) {
 
         Personnel personnelToUpdate =
-                personnelRepository.getById(id);
+                personnelRepository.findById(id)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Personnel not found with id: " + id
+                                )
+                        );
 
-        if (personnelToUpdate == null) {
-            throw new Exception("Personnel is not found by the id");
+        if (!personnelToUpdate.getIsActive()) {
+            throw new ResourceNotFoundException(
+                    "Personnel not found with id: " + id
+            );
         }
 
         personnelToUpdate.setUpdateDate(new Date());
@@ -105,13 +125,20 @@ public class PersonnelService {
         return personnelRepository.save(personnelToUpdate);
     }
 
-    public Boolean deletePersonnel(Long id) throws Exception {
+    public Boolean deletePersonnel(Long id) {
 
         Personnel personnelToUpdate =
-                personnelRepository.getById(id);
+                personnelRepository.findById(id)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Personnel not found with id: " + id
+                                )
+                        );
 
-        if (personnelToUpdate == null) {
-            throw new Exception("Personnel is not found by the id");
+        if (!personnelToUpdate.getIsActive()) {
+            throw new ResourceNotFoundException(
+                    "Personnel not found with id: " + id
+            );
         }
 
         personnelToUpdate.setUpdateDate(new Date());
